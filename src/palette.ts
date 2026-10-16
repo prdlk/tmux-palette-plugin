@@ -194,8 +194,10 @@ export async function runPalette(
   function visible(): Item[] {
     const needle = filter.trim();
     if (!needle) return items;
-    if (currentDef.filter) return currentDef.filter(items, needle);
-    return defaultFilter(items, needle);
+    const matches = currentDef.filter
+      ? currentDef.filter(items, needle)
+      : defaultFilter(items, needle);
+    return currentDef.queryItem ? [...matches, currentDef.queryItem(needle)] : matches;
   }
 
   stdin.setRawMode(true);

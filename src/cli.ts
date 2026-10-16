@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { queryItem, substituteTemplate } from "./dispatch";
 import { runPalette } from "./palette";
 import { commands } from "./palettes/commands";
 import { findPane } from "./palettes/find-pane";
@@ -7,13 +8,6 @@ import { themes } from "./palettes/themes";
 import { resolveActiveTheme, tmuxBodyStyle, tmuxColor } from "./theme";
 import type { Item, PaletteDef } from "./types";
 import { userCommands, userHidden, userPalette, userSizing } from "./userConfig";
-
-function substituteTemplate(action: Item["action"], value: string): Item["action"] {
-  if ("shell" in action) return { shell: action.shell.replace(/\{\}/g, value) };
-  if ("tmux" in action) return { tmux: action.tmux.replace(/\{\}/g, value) };
-  if ("popup" in action) return { ...action, popup: action.popup.replace(/\{\}/g, value) };
-  return action;
-}
 
 function linesToItems(
   lines: string[],
@@ -123,11 +117,13 @@ async function buildCustomPalette(name: string): Promise<PaletteDef | null> {
   const pluginItems: Item[] = custom.command
     ? runPluginCommand(custom.command, custom.action, custom.icon, custom.iconColor)
     : [];
+  const query = custom.query;
   return {
     title: custom.title ?? name,
     grouped: custom.grouped ?? false,
     emptyText: custom.emptyText,
     items: [...referenced, ...byCategory, ...pluginItems, ...(custom.items ?? [])],
+    queryItem: query ? (q) => queryItem(query, q) : undefined,
   };
 }
 

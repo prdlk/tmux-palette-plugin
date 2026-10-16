@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Custom palettes: new `query` item, listed after the matches while the search box is non-empty. `{}` expands to the typed query (shell-quoted in the action), so a palette can act on input that matches nothing, e.g. create a session by that name.
+
 ## v0.3.0 - 2026-06-12
 
 - New bundled "Terminal" theme: transparent backgrounds and terminal-native ANSI colors, so the palette follows your terminal's own color scheme. Pick it via Switch Theme... or `{ "name": "terminal" }` in `theme.json`.

@@ -249,9 +249,23 @@ bind -n M-q run-shell "~/Sites/tmux-palette/bin/tmux-palette.sh my-favs"
 - `fromCategory` — pull every item from one category
 - `command` — shell command that prints a JSON array of `Item` objects to stdout (see [plugins](#plugins) below)
 - `items` — brand-new items defined inline
+- `query` — an item listed after the matches whenever the search box is non-empty, so Enter on a query that matches nothing still acts on it. `{}` is the typed query in `title`/`description` and the shell-quoted query in the action
 - `title` / `grouped` / `emptyText` — same as built-in palettes
 
 All keys optional. Resolution order: `from` → `fromCategory` → `command` → `items`.
+
+```jsonc
+// ~/.config/tmux-palette/palettes/sessions.json — switch, or create from the query
+{
+  "title": "Sessions",
+  "command": "tmux list-sessions -F '#S'",
+  "action": { "tmux": "switch-client -t '{}'" },
+  "query": {
+    "title": "New session: {}",
+    "action": { "shell": "tmux new-session -ds {} && tmux switch-client -t {}" },
+  },
+}
+```
 
 #### Plugins
 

@@ -1,8 +1,9 @@
 import { describe, expect, test } from "bun:test";
+import { spawnSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { dispatchToFile } from "../src/dispatch";
+import { dispatchToFile, queryItem } from "../src/dispatch";
 
 function dispatchLine(action: Parameters<typeof dispatchToFile>[0]): string {
   const dir = mkdtempSync(join(tmpdir(), "tmux-palette-test-"));
@@ -40,5 +41,23 @@ describe("dispatchToFile", () => {
   test("encodes popup actions with default sizing", () => {
     expect(dispatchLine({ popup: "htop" })).toStartWith("tmux:display-popup -E -B -s '");
     expect(dispatchLine({ popup: "htop" })).toEndWith(" -h 80% -w 80% htop");
+  });
+});
+
+describe("queryItem", () => {
+  const query = `it's $HOME; "x" \`y\``;
+  const item = queryItem(
+    { title: "New {}", description: "make {}", action: { shell: "printf %s {}" } },
+    query,
+  );
+
+  test("shows the raw query in title and description", () => {
+    expect(item.title).toBe(`New ${query}`);
+    expect(item.description).toBe(`make ${query}`);
+  });
+
+  test("passes the query to the shell as one literal argument", () => {
+    if (!("shell" in item.action)) throw new Error("expected a shell action");
+    expect(spawnSync("bash", ["-c", item.action.shell]).stdout.toString()).toBe(query);
   });
 });

@@ -118,6 +118,9 @@ export type CustomPalette = {
   iconColor?: string;
   grouped?: boolean;
   emptyText?: string;
+  // Item listed after the matches while the query is non-empty. `{}` is the
+  // query in title/description and the shell-quoted query in the action.
+  query?: Item;
 };
 export function userPalette(name: string): CustomPalette | null {
   return loadJSON<CustomPalette | null>(`palettes/${name}.json`, null);

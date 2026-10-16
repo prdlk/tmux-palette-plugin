@@ -120,6 +120,12 @@ export type PaletteDef = {
    */
   filter?: (items: Item[], query: string) => Item[];
   /**
+   * Builds an extra item for the typed query, listed after the matches
+   * whenever the query is non-empty, so Enter on a query that matches nothing
+   * still does something (e.g. create a session by that name).
+   */
+  queryItem?: (query: string) => Item;
+  /**
    * Called when the highlighted item changes (arrow keys, mouse, filter
    * reset). Return a Theme to live-preview it — the renderer swaps colors
    * before the next frame paints. Used by the theme switcher.
